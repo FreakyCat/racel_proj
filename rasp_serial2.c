@@ -23,7 +23,7 @@ Pinovi povezivanje
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-//dodati relativnu putanju
+//dodati relativnu putanju na svoj fajl
 #include "/home/pi/proj_racel/PCD8544.h"
 
 void DisplayTemp(char temp[]);
@@ -38,7 +38,6 @@ int _cs = 3;
 // podesavanje kontrasta
 int contrast = 55;
 //promenjive
-char off[2];
 char temperature[7];
 char check;
 char second;
@@ -78,12 +77,15 @@ void LCDInit(uint8_t SCLK, uint8_t DIN, uint8_t DC, uint8_t CS, uint8_t RST, uin
 ==========================================================================*/
   LCDInit(_sclk, _din, _dc, _cs, _rst, contrast);
   LCDclear();
-  LCDshowLogo(1);
+  LCDshowLogo(1);//logo  Raspberry PI
   delay(200);
   LCDclear();	
 
-/*----------------------------------------------------------------------------------------------------------------*/
-
+/*=========================================================================
+unsigned int millis (void)
+Vraca broj milisekudi od kada je pozvan  poslednji put program za serijsku iz WiringPi bibliotekes. 
+Vraca unsigned 32-bit broj.
+==========================================================================*/
  nextTime = millis () + 300 ;
 
   for (count = 0 ; count < 256 ; )
@@ -103,17 +105,15 @@ int serialGetchar (int fd) ;
         while (serialDataAvail (fd))
         {
 		check=serialGetchar(fd);
-		printf("check je %c\n ", check);
-		if ((check=='-') || (check=='#'))
+		//printf("check je %c\n ", check);
+		if ((check=='-') || (check=='#'))//proverava da li preko serijske stizu znakovi # ili- 
                 {	
-			off[0]=check;
-		//	fflush(stdin);
+
 			LCDclear();
-			LCDshowLogo(2);
+			LCDshowLogo(2);//prikazuje logo "Priblizi ruku"
 			delay(50);
 			LCDclear();
-			char second;
-			second=serialGetchar(fd);
+
 		}
                 else
                 {
@@ -130,8 +130,8 @@ int serialGetchar (int fd) ;
 			    temperature[i]=serialGetchar(fd);	
 			   // printf("Temp je %c",temperature[i]);
 			  }
-			  temperature[6]='\0';
-		          DisplayTemp(temperature);	
+			  temperature[6]='\0';//dodaje se string terminator
+		          DisplayTemp(temperature);	//prikaz temperature
 			 fflush (stdout);
 		        }
 		  }
